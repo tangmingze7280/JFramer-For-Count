@@ -5,7 +5,7 @@ import cn.hutool.core.lang.Console;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import org.example.entity.CountMemory;
-import java.util.Date;
+
 
 /**
  * @program: JFramer-demo
@@ -16,6 +16,9 @@ import java.util.Date;
 public class ConuntMemoryAWT {
     public Long increatment() throws Exception{
         CountMemory by = current();
+        if(by==null){
+            by = create();
+        }
         by.increament();
         Db.use().execute("update count_memory set count_num = ? where id = ?", by.getCountNum(), by.getId());
         return by.getCountNum();
@@ -36,6 +39,10 @@ public class ConuntMemoryAWT {
     }
     public CountMemory current() throws Exception{
         String today = DateUtil.today();
-        return  Db.use().queryOne("SELECT * FROM `count_memory` where `current_date` = DATE(?)",today).toBean(CountMemory.class);
+        Entity entity = Db.use().queryOne("SELECT * FROM `count_memory` where `current_date` = DATE(?)", today);
+        if(entity!=null){
+            return entity.toBean(CountMemory.class);
+        }
+        return  null;
     }
 }
